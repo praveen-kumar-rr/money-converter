@@ -8,6 +8,8 @@ import io.vavr.collection.Stream;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.MessageFormat;
+import java.util.Optional;
 
 final public class Money {
 
@@ -76,7 +78,7 @@ final public class Money {
         final String valueAsString = roundedValue.toString();
 
         // Main Logic
-        return indexes(valueAsString.length())
+        final String result = indexes(valueAsString.length())
                 .map(t -> valueAsString.substring(t._1, t._2))
                 .filter(s -> !s.isEmpty())
                 .map(Money::words)
@@ -84,10 +86,22 @@ final public class Money {
                 .filter(t -> t._2.trim().equals("Crore") || !t._1.isEmpty()) // 0 is ignored until crores is touched
                 .reverse()
                 .map(Money::getPlural)
-                .map(t -> (t._1.isEmpty() ? "" : " And") + join(t))// Decides And is needed or not
+                .map(t -> (t._1.isEmpty() ? "" : ",") + join(t))// Decides And is needed or not
                 .mkString()
-                .replaceFirst("And ", "")
+                .replaceFirst(",", "")
                 .trim();
+
+        return replaceLast(result, ",", " And");
+    }
+
+    private static String replaceLast(String value, String source, String target) {
+        return Optional.of(value.lastIndexOf(source))
+                .filter(i -> i > 0)
+                .map(i -> MessageFormat.format("{0}{1}{2}",
+                        value.substring(0, i),
+                        target,
+                        value.substring(i + source.length())))
+                .orElse(value);
     }
 
     // Collecting the list of indexes to substring the number

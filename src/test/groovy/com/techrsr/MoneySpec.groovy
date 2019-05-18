@@ -13,7 +13,8 @@ class MoneySpec extends Specification {
         where:
         input          | output
         0              | "Zero"
-        2123           | "Two Thousand And One Hundred And Twenty Three"
+        2123           | "Two Thousand, One Hundred And Twenty Three"
+        123123         | "One Lakh, Twenty Three Thousand, One Hundred And Twenty Three"
         10050          | "Ten Thousand And Fifty"
         10000300       | "One Crore And Three Hundred"
         10000000000000 | "Ten Lakhs Crores"
